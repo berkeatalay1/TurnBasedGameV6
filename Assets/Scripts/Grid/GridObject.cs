@@ -38,5 +38,10 @@ namespace Grid
             var unitString = _unitList.Aggregate("", (current, unit) => current + (unit + "\n"));
             return _gridPosition.ToString() + "\n" + unitString;
         }
+
+        public bool HasAnyUnit()
+        {
+            return _unitList.Count > 0;
+        }
     }
 }

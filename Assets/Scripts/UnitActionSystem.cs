@@ -28,9 +28,12 @@ public class UnitActionSystem : MonoBehaviour
         if (!Input.GetMouseButtonDown(0)) return;
         
         if (TryHandleUnitSelection()) return;
-            
-        var mousePosition = MouseWorld.GetPosition();
-        selectedUnit.Move(mousePosition);
+        
+        var gridMousePos = LevelGrid.Instance.GetGridPosition(MouseWorld.GetPosition());
+        if (selectedUnit.GetMoveAction().IsValidActionGridPosition(gridMousePos))
+        {
+            selectedUnit.GetMoveAction().Move(gridMousePos);
+        }
     }
 
     private bool TryHandleUnitSelection()

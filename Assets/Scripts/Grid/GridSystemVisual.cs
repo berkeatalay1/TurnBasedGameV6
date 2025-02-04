@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Grid
@@ -5,17 +7,57 @@ namespace Grid
     public class GridSystemVisual : MonoBehaviour
     {
         [SerializeField] private Transform gridSystemVisualSinglePrefab;
+
+        private GridSystemVisualSingle[,] _gridSystemVisualSingleArray;
+        
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-            for (int x = 0; x < LevelGrid.Instance.GetWidth(); x++)
+            var width = LevelGrid.Instance.GetWidth();
+            var height = LevelGrid.Instance.GetHeight();
+            _gridSystemVisualSingleArray = new GridSystemVisualSingle[width, height];
+            for (int x = 0; x < width; x++)
             {
-                for (int z = 0; z < LevelGrid.Instance.GetHeight(); z++)
+                for (int z = 0; z < height; z++)
                 {
                     GridPosition gridPosition= new GridPosition(x,z);
-                    var instance = Instantiate(gridSystemVisualSinglePrefab,  LevelGrid.Instance.GetWorldPosition(gridPosition),Quaternion.identity); 
+                    var instance = Instantiate(gridSystemVisualSinglePrefab,  LevelGrid.Instance.GetWorldPosition(gridPosition),Quaternion.identity);
+                    _gridSystemVisualSingleArray[x, z] = instance.GetComponent<GridSystemVisualSingle>();
                 }
             }
+        }
+
+        public void HideAllGridPositions()
+        {
+            var width = LevelGrid.Instance.GetWidth();
+            var height = LevelGrid.Instance.GetHeight();
+            for (int x = 0; x < width; x++)
+            {
+                for (int z = 0; z < height; z++)
+                {
+                   _gridSystemVisualSingleArray[x,z].Hide();
+                }
+            }
+        }
+
+        public void ShowGridPositionList(List<GridPosition> gridPositions)
+        {
+            foreach (var gridPosition in gridPositions)
+            {
+                _gridSystemVisualSingleArray[gridPosition.x, gridPosition.z].Show();
+            }
+        }
+
+        private void Update()
+        {
+            UpdateGridVisual();
+        }
+
+        private void UpdateGridVisual()
+        {
+            HideAllGridPositions();
+            Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
+            ShowGridPositionList(selectedUnit.GetMoveAction().GetValidGridPositionList());
         }
 
         

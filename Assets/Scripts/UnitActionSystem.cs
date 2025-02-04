@@ -25,15 +25,24 @@ public class UnitActionSystem : MonoBehaviour
 
     private void Update()
     {
-        if (!Input.GetMouseButtonDown(0)) return;
-        
-        if (TryHandleUnitSelection()) return;
-        
-        var gridMousePos = LevelGrid.Instance.GetGridPosition(MouseWorld.GetPosition());
-        if (selectedUnit.GetMoveAction().IsValidActionGridPosition(gridMousePos))
+        if (Input.GetMouseButtonDown(0))
         {
-            selectedUnit.GetMoveAction().Move(gridMousePos);
+            if (TryHandleUnitSelection()) return;
+        
+            var gridMousePos = LevelGrid.Instance.GetGridPosition(MouseWorld.GetPosition());
+            if (selectedUnit.GetMoveAction().IsValidActionGridPosition(gridMousePos))
+            {
+                selectedUnit.GetMoveAction().Move(gridMousePos);
+            }
         }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            selectedUnit.GetSpinAction().Spin();
+        }
+        
+
+
     }
 
     private bool TryHandleUnitSelection()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Grid;
 using UnityEngine;
@@ -15,13 +16,18 @@ namespace Actions
         [SerializeField] private Animator unitAnimator;
 
         private readonly int _isWalking = Animator.StringToHash("isWalking");
-
+        private Action _onMoveComplete;
 
         private Vector3 _targetPosition;
         protected override void Awake()
         {
             base.Awake();
             _targetPosition = transform.position;
+        }
+
+        public override string GetActionName()
+        {
+            return "Move";
         }
 
         // Update is called once per frame
@@ -35,6 +41,7 @@ namespace Actions
                 unitAnimator.SetBool(_isWalking,true);
             } else {
                 unitAnimator.SetBool(_isWalking,false);
+                _onMoveComplete();
                 IsActive = false;
 
             }
@@ -42,19 +49,14 @@ namespace Actions
             transform.forward = Vector3.Lerp(transform.forward,moveDirection,Time.deltaTime *rotationSpeed);
 
         }
-    
-        public bool IsValidActionGridPosition(GridPosition gridPosition)
-        {
-            List<GridPosition> validGridPositionList = GetValidGridPositionList();
-            return validGridPositionList.Contains(gridPosition);
-        }
 
-        public void Move(GridPosition  newTargetPosition) {
+        public override void TakeAction(GridPosition  newTargetPosition,Action onMoveComplete) {
             this._targetPosition = LevelGrid.Instance.GetWorldPosition(newTargetPosition);
+            _onMoveComplete = onMoveComplete;
             IsActive = true;
         }
 
-        public List<GridPosition> GetValidGridPositionList()
+        public override List<GridPosition> GetValidGridPositionList()
         {
             List<GridPosition> gridPositions = new List<GridPosition>();
             GridPosition unitGridPosition = Unit.GetGridPosition();
